@@ -1,11 +1,9 @@
-// New Screen Widget to Display Shopping Basket Items
 import 'package:e_shop/models/products.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutScreen extends StatelessWidget {
-  final List<Product>
-      basketItems; // Assuming Product is the type of items in the basket
-  final List<int> counts; // List to hold the count for each item
+  final List<Product> basketItems;
+  final List<int> counts;
   final double total;
 
   const CheckoutScreen({
@@ -18,7 +16,7 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: Text('Validation de commande'),
       ),
       body: Column(
         children: [
@@ -30,9 +28,8 @@ class CheckoutScreen extends StatelessWidget {
                 final count = counts[index];
                 return ListTile(
                   title: Text(product.title),
-                  subtitle: Text('Quantity: $count'),
-                  trailing: Text(
-                      'Total: ${product.price * count}'), // Assuming price is stored in product
+                  subtitle: Text('Quantité : $count'),
+                  trailing: Text('Total : ${product.price * count}'),
                 );
               },
             ),
@@ -43,7 +40,7 @@ class CheckoutScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total:',
+                  'Total :',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -60,11 +57,8 @@ class CheckoutScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              // Handle the checkout process here
-              // You can navigate to a confirmation screen or perform any other action
-            },
-            child: Text('Proceed to Checkout'),
+            onPressed: () {},
+            child: Text('Procéder au paiement'),
           ),
         ],
       ),

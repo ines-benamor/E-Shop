@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:e_shop/providers/user_provider.dart';
 import 'package:e_shop/ui/product_detail.dart';
+import 'package:e_shop/ui/product_list_screen.dart';
 import 'package:e_shop/ui/profile-screen.dart';
 import 'package:e_shop/ui/search_screen.dart';
 import 'package:e_shop/ui/shopping_basket_screen.dart';
@@ -23,48 +23,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthService authService = AuthService();
-  final ProductService firestoreService = ProductService();
+  final ProductService productService = ProductService();
   late Future<List<Product>> UsersProducts;
   late Future<String?> Usersname;
 
   late var UsersData;
   late UserProvider UsersProvider;
-  late Timer _notificationTimer;
-
-  void _startNotificationTimer() {
-    // Set up a timer to check for promotions every hour
-    _notificationTimer = Timer.periodic(Duration(hours: 1), (timer) {
-      _checkProductPromotions();
-    });
-  }
-
-  void _checkProductPromotions() {
-    // Get the list of products from the provider
-    List<Product> products =
-        Provider.of<ProductProvider>(context, listen: false).products;
-
-    // Iterate through the products and check for promotions
-    for (Product product in products) {
-      if (product.price < 50 || product.price < 10) {
-        // Trigger a notification for products on promotion
-        Fluttertoast.showToast(
-          msg: "Promotion: ${product.title} is on sale!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black87,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      }
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    UsersProducts = firestoreService.fetchProducts();
-    Usersname = authService.getCurrentUsername();
+    UsersProducts = productService.fetchProducts();
     getUsersData();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -73,14 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     UsersProvider = Provider.of<UserProvider>(context, listen: false);
     UsersProvider.fetchUser();
-
-    // Start the timer to check for promotions every hour
-    _startNotificationTimer();
   }
 
   Future<void> getUsersData() async {
-    UsersData = await firestoreService.getUserData();
-    setState(() {}); // Ensure the UI is updated after fetching user data
+    UsersData = await productService.getUserData();
+    setState(() {});
   }
 
   bool isLikeAnimating = false;
@@ -109,8 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: getAccentColor(context),
+        title: Text("E-Shop", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.shopping_cart, color: Colors.white),
           onPressed: () {
             Navigator.push(
               context,
@@ -122,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -180,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     "Produits",
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: getAccentColor(context),
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -188,17 +156,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   Spacer(),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => NewProductScreen(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductListScreen(),
+                        ),
+                      );
                     },
                     child: Text(
                       "Voir tous",
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: getAccentColor(context),
                         fontSize: 15,
                         decoration: TextDecoration.underline,
                       ),
@@ -219,15 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: productProvider.products.map((product) {
-                        bool isNew = isNewProduct(product.meta.createdAt);
+                      children: productProvider.products.take(5).map((product) {
+                        bool isNew = isNewProduct(product.meta!.createdAt);
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             width: 150,
                             height: 350,
                             decoration: BoxDecoration(
-                              color: greyButtonColor,
+                              color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                             child: Stack(
@@ -241,11 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ProductDetailScreen(
                                           product.thumbnail,
                                           product.title,
-                                          product.id.toString(),
+                                          product.id,
                                           product.price.toString(),
                                           product.description,
                                           product.category,
-                                          product.stock.toString(),
+                                          product.stock,
                                         ),
                                       ),
                                     );
@@ -329,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                       if (product.price < 50)
                                                         Text(
-                                                          "${(product.price - (product.price * (product.discountPercentage / 100))).toStringAsFixed(2)} DT",
+                                                          "${(product.price - (product.price * (product.discountPercentage! / 100))).toStringAsFixed(2)} DT",
                                                           style: TextStyle(
                                                             fontSize: 15,
                                                             color:
@@ -395,20 +363,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         textColor: Colors.white,
                                         fontSize: 16.0,
                                       );
-                                      // final basketProvider =
-                                      //     Provider.of<BasketProvider>(context,
-                                      //         listen: false);
-                                      // basketProvider.addToBasket(
-                                      //     product as basketProduct);
-
-                                      // ScaffoldMessenger.of(context)
-                                      //     .showSnackBar(
-                                      //   SnackBar(
-                                      //     content: Text(
-                                      //         "${product.title} added to basket"),
-                                      //     duration: Duration(seconds: 2),
-                                      //   ),
-                                      // );
                                     },
                                   ),
                                 ),

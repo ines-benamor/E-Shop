@@ -1,9 +1,9 @@
 import 'package:e_shop/ui/home-screen.dart';
 import 'package:e_shop/widgets/color_data.dart';
+import 'package:e_shop/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:e_shop/service/auth.dart';
 import 'package:e_shop/ui/login/register-screen.dart';
-import 'package:e_shop/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,18 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   AuthService authservice = AuthService();
 
-  Future<void> signInWithGoogle() async {
-    try {
-      await authservice.signInWithGoogle();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -61,16 +49,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (res == 'success') {
-      // Beni Hatırla seçeneğini sakla
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+
       prefs.setBool('rememberMe', rememberMe);
 
       if (rememberMe) {
-        // Eğer hatırla seçeneği işaretliyse, e-posta ve şifreyi kaydet
         prefs.setString('email', emailController.text);
         prefs.setString('password', passwordController.text);
       } else {
-        // Eğer hatırla seçeneği işaretli değilse önceki bilgileri temizle
         prefs.remove('email');
         prefs.remove('password');
       }

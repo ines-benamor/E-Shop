@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/models/meta.dart';
 
 class Product {
@@ -7,8 +6,8 @@ class Product {
   final String description;
   final String category;
   final double price;
-  final double discountPercentage;
-  // final double rating;
+  double? discountPercentage;
+  final double? rating;
   int stock;
   // final List<String> tags;
   // final String brand;
@@ -21,7 +20,7 @@ class Product {
   // final List<Review> reviews;
   // final String returnPolicy;
   // final int minimumOrderQuantity;
-  final Meta meta;
+  final Meta? meta;
   // final List<String> images;
   final String thumbnail;
 
@@ -32,8 +31,8 @@ class Product {
     required this.description,
     required this.category,
     required this.price,
-    required this.discountPercentage,
-    // required this.rating,
+    this.discountPercentage,
+    this.rating,
     required this.stock,
     // required this.tags,
     // required this.brand,
@@ -46,7 +45,7 @@ class Product {
     // required this.reviews,
     // required this.returnPolicy,
     // required this.minimumOrderQuantity,
-    required this.meta,
+    this.meta,
     // required this.images,
     required this.thumbnail,
   });
@@ -77,36 +76,6 @@ class Product {
       meta: Meta.fromJson(json['meta']),
       // images: List<String>.from(json['images']),
       thumbnail: json['thumbnail'],
-    );
-  }
-
-  // Factory method for creating an instance from Firestore DocumentSnapshot
-  static Product fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
-    return Product(
-      id: snapshot['id'],
-      title: snapshot['title'],
-      description: snapshot['description'],
-      category: snapshot['category'],
-      price: snapshot['price'],
-      discountPercentage: snapshot['discountPercentage'],
-      // rating: snapshot['rating'],
-      stock: snapshot['stock'],
-      // tags: List<String>.from(snapshot['tags']),
-      // brand: snapshot['brand'],
-      // sku: snapshot['sku'],
-      // weight: snapshot['weight'],
-      // dimensions: Dimensions.fromJson(snapshot['dimensions']),
-      // warrantyInformation: snapshot['warrantyInformation'],
-      // shippingInformation: snapshot['shippingInformation'],
-      // availabilityStatus: snapshot['availabilityStatus'],
-      // reviews:
-      //     (snapshot['reviews'] as List).map((e) => Review.fromJson(e)).toList(),
-      // returnPolicy: snapshot['returnPolicy'],
-      // minimumOrderQuantity: snapshot['minimumOrderQuantity'],
-      meta: Meta.fromJson(snapshot['meta']),
-      // images: List<String>.from(snapshot['images']),
-      thumbnail: snapshot['thumbnail'],
     );
   }
 

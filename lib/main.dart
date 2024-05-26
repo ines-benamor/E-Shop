@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:e_shop/providers/product_provider.dart';
-import 'package:e_shop/providers/purchased_provider.dart';
 import 'package:e_shop/providers/basket_provider.dart';
 import 'package:e_shop/providers/price_range_provider.dart';
 import 'package:e_shop/providers/user_provider.dart';
@@ -19,7 +18,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -29,12 +27,11 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => BasketProvider()),
           ChangeNotifierProvider(create: (context) => PriceRangeProvider()),
           ChangeNotifierProvider(create: (context) => ProductProvider()),
-          ChangeNotifierProvider(create: (context) => PurchasedItemsProvider()),
         ],
         child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
           home: AuthenticationWrapper(),

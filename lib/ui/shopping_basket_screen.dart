@@ -1,3 +1,4 @@
+import 'package:e_shop/ui/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:e_shop/providers/basket_provider.dart';
@@ -17,7 +18,7 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
   var total = 0.0;
 
   late String? userId;
-  late List<int> counts; // List to hold the count for each item
+  late List<int> counts;
 
   Future<void> fetchData() async {
     userId = await authService.getCurrentUserId();
@@ -27,13 +28,21 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
   void initState() {
     super.initState();
     fetchData();
-    counts = List.filled(context.read<BasketProvider>().basketItems.length,
-        1); // Initialize counts
+    counts = List.filled(context.read<BasketProvider>().basketItems.length, 1);
   }
 
   Future<void> _onItemTapped(int index) async {
     if (index == 1) {
-      double basketTotal = total;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckoutScreen(
+            basketItems: context.read<BasketProvider>().basketItems,
+            counts: counts,
+            total: total,
+          ),
+        ),
+      );
     } else {
       setState(() {
         _selectedIndex = index;
@@ -82,7 +91,7 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         width: double.infinity,
-                        height: 150, // Ajustez la hauteur selon vos besoins
+                        height: 150,
                         decoration: BoxDecoration(
                           color: greyButtonColor,
                           borderRadius: BorderRadius.circular(20.0),
@@ -95,11 +104,11 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
                                 builder: (context) => ProductDetailScreen(
                                   item.thumbnail,
                                   item.title,
-                                  item.id.toString(),
+                                  item.id,
                                   item.price.toString(),
                                   item.description,
                                   item.category,
-                                  item.stock.toString(),
+                                  item.stock,
                                 ),
                               ),
                             );
@@ -221,7 +230,7 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_forward_ios),
+            icon: Icon(Icons.arrow_forward_ios, color: Colors.transparent),
             label: '',
           ),
           BottomNavigationBarItem(
@@ -231,7 +240,6 @@ class _ShoppingBasketScreenState extends State<ShoppingBasketScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
     );

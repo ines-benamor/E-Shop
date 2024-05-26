@@ -1,6 +1,8 @@
+// ignore_for_file: unnecessary_type_check
+
 import 'package:e_shop/service/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:e_shop/models/users.dart'; // Changed import statement
+import 'package:e_shop/models/users.dart';
 import 'package:e_shop/service/product_service.dart';
 
 class UserProvider with ChangeNotifier {
@@ -12,7 +14,7 @@ class UserProvider with ChangeNotifier {
     surname: 'null',
   );
 
-  ProductService _productService = ProductService(); // Changed variable name
+  ProductService _productService = ProductService();
 
   User get getUser => _user;
   final AuthService _authService = AuthService();
@@ -20,11 +22,8 @@ class UserProvider with ChangeNotifier {
   Future<void> fetchUserByEmail(String email) async {
     try {
       final userData = await _authService.getUserByEmail(email);
-      if (userData != null) {
-        _user = User.fromJson(
-            userData); // Ensure you have a method to convert JSON to User model
-        notifyListeners();
-      }
+      _user = User.fromJson(userData);
+      notifyListeners();
     } catch (e) {
       print("Error fetching user data: $e");
     }
@@ -32,8 +31,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> fetchUser() async {
     try {
-      var userData = await _productService.getUserData(); // Changed method name
-
+      var userData = await _productService.getUserData();
       if (userData is User) {
         _user = userData;
       } else {

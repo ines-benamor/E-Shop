@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:e_shop/providers/user_provider.dart';
 import 'package:e_shop/service/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String email; // Assume we are passing email to fetch user
+  final String email;
 
-  const ProfileScreen({super.key, required this.email});
+  const ProfileScreen({Key? key, required this.email}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -25,17 +25,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
-      body: user == null
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                // Display user data
-                Text('Name: ${user.name} ${user.surname}'),
-                Text('Email: ${user.email}'),
-                Text('Username: ${user.username}'),
-                // Other UI elements
-              ],
-            ),
+      appBar: AppBar(
+        title: Text('Profil'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              AuthService().signOut(context);
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Text('Nom: ${user.name} ${user.surname}'),
+          Text('Email: ${user.email}'),
+          Text('Nom d\'utilisateur: ${user.username}'),
+        ],
+      ),
     );
   }
 }

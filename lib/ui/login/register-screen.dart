@@ -1,8 +1,8 @@
 import 'package:e_shop/widgets/color_data.dart';
+import 'package:e_shop/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:e_shop/service/auth.dart';
 import 'package:e_shop/ui/login/login-screen.dart';
-import 'package:e_shop/utils/utils.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -12,66 +12,69 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  var nameController = TextEditingController();
-  var surnameController = TextEditingController();
-  var UsersNameController = TextEditingController();
-  var phoneController = TextEditingController();
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final surnameController = TextEditingController();
+  final usersNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool obscureText = true;
 
-  var obscureText = true;
-
-  AuthService authservice = AuthService();
+  final AuthService authService = AuthService();
 
   @override
   void dispose() {
-    super.dispose();
-    UsersNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
     nameController.dispose();
     surnameController.dispose();
+    usersNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   void signUpUsers() async {
+    if (nameController.text.isEmpty ||
+        surnameController.text.isEmpty ||
+        usersNameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      showSnackBar(context, "Veuillez remplir tous les champs.");
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    // signup Users using our authmethodds
-    String res = await AuthService().signupUser(
+    String res = await authService.signupUser(
         name: nameController.text,
         email: emailController.text,
         password: passwordController.text,
-        username: UsersNameController.text,
+        username: usersNameController.text,
         surname: surnameController.text);
 
-    if (res == "success") {
-      setState(() {
-        _isLoading = false;
-      });
+    setState(() {
+      _isLoading = false;
+    });
 
+    if (res == "success") {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => LoginScreen(),
       ));
-
-      setState(() {
-        _isLoading = false;
-      });
-      if (context.mounted) {
-        showSnackBar(context, res);
-      }
+      showSnackBar(context, "Inscription réussie!");
       clearTextFields();
+    } else {
+      showSnackBar(context, res);
     }
   }
 
   void clearTextFields() {
     nameController.clear();
     surnameController.clear();
-    UsersNameController.clear();
+    usersNameController.clear();
     emailController.clear();
     passwordController.clear();
     phoneController.clear();
@@ -133,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 10),
                     TextField(
-                      controller: UsersNameController,
+                      controller: usersNameController,
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.person_outline),
                         fillColor: Colors.transparent,
@@ -202,10 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      onPressed: () {
-                        signUpUsers();
-                        //registerWithEmailAndPassword();
-                      },
+                      onPressed: _isLoading ? null : signUpUsers,
                       child: _isLoading
                           ? Center(
                               child: CircularProgressIndicator(
